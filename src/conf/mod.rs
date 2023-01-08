@@ -16,8 +16,8 @@ pub struct Config {
   pub port: u16,
   #[serde(default="default_db_file")]
   pub dbFile: String,
-  // #[serde(default="default_folder")]
-  // pub musicFolder: String,
+  #[serde(default="default_folder")]
+  pub musicFolder: String,
   #[serde(default="default_secret")]
   pub secret: String,
 }
@@ -30,10 +30,10 @@ fn default_secret() -> String {
     .collect()
 }
 
-// fn default_folder() -> String {
-//   let home = home::home_dir().unwrap();
-//   home.join("music").into_os_string().into_string().unwrap()
-// }
+fn default_folder() -> String {
+  let home = home::home_dir().unwrap();
+  home.join("music").into_os_string().into_string().unwrap()
+}
 
 fn default_port() -> u16 {
   1111

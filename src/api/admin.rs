@@ -97,7 +97,7 @@ pub fn admin_api(app: &mut Server<State>) {
     eprintln!("LOL USER `{}`", user.username);
     
     
-    // scan_on_new_thread(req.state().conf.musicFolder.clone().to_string(), req.state().db.clone());
+    scan_on_new_thread(req.state().conf.musicFolder.clone().to_string(), req.state().db.clone());
 
     Ok("{}")
   });
