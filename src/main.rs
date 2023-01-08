@@ -10,6 +10,7 @@ use tide::Response;
 use tide::StatusCode;
 use tide::Request;
 use tide::Body;
+use tide::Redirect;
 
 use crate::conf::Config;
 use crate::conf::Load;
@@ -57,6 +58,8 @@ async fn main() -> Result<(),Box<dyn std::error::Error>> {
     }
     Ok(res)
   }));
+
+  app.at("/").get(|_| async { Ok(Body::from_file("webapp/index.html").await?) }).serve_dir("webapp/")?;
   
   app.at("/test-error")
   .get(|_req: Request<_>| async { Ok(Body::from_file("./does-not-exist").await?) });
@@ -64,12 +67,27 @@ async fn main() -> Result<(),Box<dyn std::error::Error>> {
   api::public::public_api(&mut app);
   api::auth::auth_api(&mut app);
 
-  app.at("/admin").nest({
+  app.at("/admin-api").nest({
     let mut admin_routes = tide::with_state(lol);
     api::admin::admin_api(&mut admin_routes);
     admin_routes
   });
 
+  app.at("/admin/").serve_file("webapp/admin/index.html")?;
+  app.at("/admin").get(Redirect::new("/admin/"));
+  app.at("/login/").serve_file("webapp/login/index.html")?;
+  app.at("/login").get(Redirect::new("/login/"));
+
+  app.at("/shared/").serve_file("webapp/shared/index.html")?;
+  app.at("/shared").get(Redirect::new("/shared/"));
+
+  app.at("/remote/").serve_file("webapp/remote/index.html")?;
+  app.at("/remote").get(Redirect::new("/remote/"));
+
+  app.at("/qr/").serve_file("webapp/qr/index.html")?;
+  app.at("/qr").get(Redirect::new("/qr/"));
+
+  // app.at("/admin").get(|_| async { Ok(Body::from_file("webapp/admin/index.html").await?) }).serve_dir("webapp/admin")?;
 
   app.listen(format!("127.0.0.1:{}", &port.to_string())).await?;
   Ok(())
